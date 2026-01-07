@@ -3,11 +3,14 @@
 const ConvertHandler = require('../controllers/convertHandler.js');
 
 module.exports = function (app) {
-
   const convertHandler = new ConvertHandler();
 
   app.get('/api/convert', function (req, res) {
     const input = req.query.input;
+
+    if (!input) {
+      return res.send('invalid unit');
+    }
 
     const initNum = convertHandler.getNum(input);
     const initUnit = convertHandler.getUnit(input);
@@ -26,19 +29,18 @@ module.exports = function (app) {
 
     const returnUnit = convertHandler.getReturnUnit(initUnit);
     const returnNum = convertHandler.convert(initNum, initUnit);
-    const string = convertHandler.getString(
-      initNum,
-      initUnit,
-      returnNum,
-      returnUnit
-    );
 
-    res.json({
+    return res.json({
       initNum,
       initUnit,
       returnNum,
       returnUnit,
-      string
+      string: convertHandler.getString(
+        initNum,
+        initUnit,
+        returnNum,
+        returnUnit
+      )
     });
   });
 };
