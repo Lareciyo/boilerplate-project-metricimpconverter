@@ -19,17 +19,29 @@ function ConvertHandler() {
     return parseFloat(num);
   };
 
-  this.getUnit = function (input) {
+ this.getUnit = function (input) {
   const result = input.match(/[a-zA-Z]+$/);
   if (!result) return 'invalid unit';
 
-  const unit = result[0].toLowerCase();
-  const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
+  const unit = result[0];
 
-  if (!validUnits.includes(unit)) return 'invalid unit';
+  const validUnits = {
+    gal: 'gal',
+    l: 'L',
+    L: 'L',
+    mi: 'mi',
+    km: 'km',
+    lbs: 'lbs',
+    kg: 'kg'
+  };
 
-  return unit === 'l' ? 'L' : unit;
+  if (!validUnits[unit.toLowerCase()]) {
+    return 'invalid unit';
+  }
+
+  return validUnits[unit.toLowerCase()];
 };
+
 
   this.getReturnUnit = function (initUnit) {
     const map = {
