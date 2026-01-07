@@ -1,42 +1,39 @@
-"use strict";
-
-const ConvertHandler = require("../controllers/convertHandler.js");
+const expect = require('chai').expect;
+const ConvertHandler = require('../controllers/convertHandler.js');
 
 module.exports = function (app) {
   const convertHandler = new ConvertHandler();
 
-  app.route("/api/convert").get(function (req, res) {
+  
+  app.get('/api/convert', (req, res) => {
     const input = req.query.input;
 
-    const num = convertHandler.getNum(input);
-    const unit = convertHandler.getUnit(input);
+    const initNum = convertHandler.getNum(input);
+    const initUnit = convertHandler.getUnit(input);
 
-    if (num === "invalid number" && unit === "invalid unit") {
-      return res.send("invalid number and unit");
+    const numInvalid = initNum === 'invalid number';
+    const unitInvalid = initUnit === 'invalid unit';
+
+   
+    if (numInvalid && unitInvalid) {
+      return res.status(200).send('invalid number and unit');
+    } else if (numInvalid) {
+      return res.status(200).send('invalid number');
+    } else if (unitInvalid) {
+      return res.status(200).send('invalid unit');
     }
 
-    if (num === "invalid number") {
-      return res.send("invalid number");
-    }
+    const returnNum = convertHandler.convert(initNum, initUnit);
+    const returnUnit = convertHandler.getReturnUnit(initUnit);
+    const string = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
 
-    if (unit === "invalid unit") {
-      return res.send("invalid unit");
-    }
-
-    const returnUnit = convertHandler.getReturnUnit(unit);
-    const returnNum = convertHandler.convert(num, unit);
-
+    
     res.json({
-      initNum: num,
-      initUnit: unit === "l" ? "L" : unit,
-      returnNum: Number(returnNum.toFixed(5)),
-      returnUnit: returnUnit === "l" ? "L" : returnUnit,
-      string: convertHandler.getString(
-        num,
-        unit,
-        Number(returnNum.toFixed(5)),
-        returnUnit
-      ),
+      initNum,
+      initUnit,
+      returnNum,
+      returnUnit,
+      string
     });
   });
 };
