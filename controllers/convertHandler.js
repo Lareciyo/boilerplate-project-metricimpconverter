@@ -20,16 +20,16 @@ function ConvertHandler() {
   };
 
   this.getUnit = function (input) {
-    const result = input.match(/[a-zA-Z]+$/);
-    if (!result) return 'invalid unit';
+  const result = input.match(/[a-zA-Z]+$/);
+  if (!result) return 'invalid unit';
 
-    const unit = result[0].toLowerCase();
-    const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
+  const unit = result[0].toLowerCase();
+  const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
 
-    if (!validUnits.includes(unit)) return 'invalid unit';
+  if (!validUnits.includes(unit)) return 'invalid unit';
 
-    return unit === 'l' ? 'L' : unit;
-  };
+  return unit === 'l' ? 'L' : unit;
+};
 
   this.getReturnUnit = function (initUnit) {
     const map = {
