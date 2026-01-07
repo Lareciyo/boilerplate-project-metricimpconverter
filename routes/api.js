@@ -3,44 +3,34 @@
 const ConvertHandler = require('../controllers/convertHandler.js');
 
 module.exports = function (app) {
+
   const convertHandler = new ConvertHandler();
 
-  app.get('/api/convert', function (req, res) {
-    const input = req.query.input;
+  app.route('/api/convert')
+    .get(function (req, res) {
+      const input = req.query.input;
 
-    if (!input) {
-      return res.send('invalid unit');
-    }
+      const num = convertHandler.getNum(input);
+      const unit = convertHandler.getUnit(input);
 
-    const initNum = convertHandler.getNum(input);
-    const initUnit = convertHandler.getUnit(input);
+      if (num === "invalid number" && unit === "invalid unit") {
+        return res.send("invalid number and unit");
+      }
+      if (num === "invalid number") return res.send("invalid number");
+      if (unit === "invalid unit") return res.send("invalid unit");
 
-    if (initNum === 'invalid number' && initUnit === 'invalid unit') {
-      return res.send('invalid number and unit');
-    }
+      const returnUnitRaw = convertHandler.getReturnUnit(unit);
+      const returnNum = convertHandler.convert(num, unit);
 
-    if (initNum === 'invalid number') {
-      return res.send('invalid number');
-    }
+      const initUnit = unit === "l" ? "L" : unit;
+      const returnUnit = returnUnitRaw === "l" ? "L" : returnUnitRaw;
 
-    if (initUnit === 'invalid unit') {
-      return res.send('invalid unit');
-    }
-
-    const returnUnit = convertHandler.getReturnUnit(initUnit);
-    const returnNum = convertHandler.convert(initNum, initUnit);
-
-    return res.json({
-      initNum,
-      initUnit,
-      returnNum,
-      returnUnit,
-      string: convertHandler.getString(
-        initNum,
-        initUnit,
-        returnNum,
-        returnUnit
-      )
+      res.json({
+        initNum: num,
+        initUnit: initUnit,
+        returnNum: Number(returnNum.toFixed(5)),
+        returnUnit: returnUnit,
+        string: convertHandler.getString(num, unit, Number(returnNum.toFixed(5)), returnUnitRaw)
+      });
     });
-  });
 };
